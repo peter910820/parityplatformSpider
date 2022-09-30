@@ -1,0 +1,5 @@
+line-bot-sdk
+flask
+jinja2
+gunicorn
+requests
