@@ -33,8 +33,12 @@ def callback():
 # handle message
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="目前還未開放指令查詢!"))
-
+    if event.message.text == '!register':
+        msg = []
+        msg.append(TextSendMessage(text='歡迎使用註冊功能!請使用下方專用註冊連結填寫資料註冊!'))
+        msg.append(TextSendMessage(text=f'https://docs.google.com/forms/d/10_NMvZR9Jl0rga3H76RQfJqkDlBL7VZ4GNqGWqyM7Lk/viewform?entry.1151485071={event.source.user_id}&edit_requested=true'))
+        line_bot_api.reply_message(event.reply_token, messages=msg[:5])
+    else: line_bot_api.reply_message(event.reply_token, TextSendMessage(text="目前還未開放指令查詢!"))
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
