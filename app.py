@@ -10,6 +10,8 @@ from linebot.models import *
 import os,json,requests
 from bs4 import BeautifulSoup
 
+from src.toolkit import parity
+
 app = Flask(__name__)
 
 # Channel Access Token
@@ -38,6 +40,10 @@ def handle_message(event):
         msg = []
         msg.append(TextSendMessage(text='歡迎使用註冊功能!請使用下方專用註冊連結填寫資料註冊!'))
         msg.append(TextSendMessage(text=f'https://docs.google.com/forms/d/10_NMvZR9Jl0rga3H76RQfJqkDlBL7VZ4GNqGWqyM7Lk/viewform?entry.1151485071={event.source.user_id}&edit_requested=true'))
+        line_bot_api.reply_message(event.reply_token, messages=msg[:5])
+    elif event.message.text == '!parity':
+        msg = []
+        msg.append(TextSendMessage(text='請點擊選單左側的鍵盤圖示切換成鍵盤，輸入要比價的商品即可。'))
         line_bot_api.reply_message(event.reply_token, messages=msg[:5])
     elif event.message.text == '!popular_recommend':
         res = requests.get('https://www.findprice.com.tw/')
@@ -157,7 +163,12 @@ def handle_message(event):
         flexMessage_json += ']}'
         FlexMessage = json.loads(flexMessage_json)
         line_bot_api.reply_message(event.reply_token, FlexSendMessage('熱門搜尋',FlexMessage))
-    else: line_bot_api.reply_message(event.reply_token, TextSendMessage(text="目前還未開放指令查詢!"))
+    else:
+        x = parity(event.message.text)
+        print(x)
+        FlexMessage = json.loads(x)
+        line_bot_api.reply_message(event.reply_token, FlexSendMessage('商品比價',FlexMessage))
+        
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
